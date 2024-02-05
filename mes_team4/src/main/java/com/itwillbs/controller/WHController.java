@@ -161,4 +161,17 @@ public class WHController {
 		return result;
 	}
 	
+	@RequestMapping(value = {"/wh/wh"}, method = {RequestMethod.GET})
+	  public String rel(HttpServletRequest request, Model model, WHDTO whdto) {
+	    System.out.println("WHController wh()");
+	    
+	    String wh_cd = request.getParameter("wh_cd");
+	    whdto.setWh_cd(wh_cd);
+	    
+	    WHDTO whDTO = whService.getwh(wh_cd);
+	    model.addAttribute("whDTO", whDTO);
+	    
+	    return "warehouse/Wh";
+	  }
+	
 }

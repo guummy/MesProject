@@ -225,7 +225,7 @@ $(document).on("keyup", ".wh_tel", function() {
 					<td>
 					<input type="hidden" id="sample4_postcode" placeholder="우편번호">
 					<input type="button" onclick="sample4_execDaumPostcode()" value="주소 찾기" ><br>
-					<input type="text" name="wh_addr" id="wh_addr" class="wh_addr" placeholder="도로명주소" readonly>
+					<input type="text" name="wh_addr" id="wh_addr" class="wh_addr" placeholder="도로명주소" size=40 readonly>
 					<input type="hidden" id="sample4_jibunAddress" placeholder="지번주소">
 					</td>
 				</tr>
