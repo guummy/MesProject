@@ -1,0 +1,301 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<!-- 파일이름 대신 namespace 이름을 불러서 사용 -->
+
+<mapper namespace="com.itwillbs.mappers.instructionMapper">
+	
+	<!-- ?대신 memberDTO의 멤버변수명 사용 #{id}-->
+<!-- 	<insert id="memberinsertpro"> -->
+<!-- 		insert into employees(emp_no,dept_cd,grade_cd,priv_cd,emp_name,emp_pass)  -->
+<!-- 		values(#{emp_no},#{dept_cd},#{grade_cd},#{priv_cd},#{emp_name},#{emp_pass}) -->
+<!-- 	</insert> -->
+
+<!-- 	<select id="getMaxEmp_no" resultType="java.lang.Integer"> -->
+<!-- 		select max(emp_no) from employees -->
+<!-- 	</select> -->
+
+	
+	
+	
+	 <select id="getorderlist" resultType="com.itwillbs.domain.OrderDTO">
+    	select * from order_management
+    	<if test="search != null">
+    	where order_cd like CONCAT('%',#{search},'%')
+    	</if>
+    	limit #{startRow},#{pageSize}	
+    </select>
+	
+
+	<resultMap type="map" id="map2">
+		<!-- column="DB의 열이름" property="해당 DB열에 대해 저장할 변수이름"-->
+		<result column="order_cd" property="order_cd"/>
+		<result column="order_count" property="order_count"/>
+		<result column="order_date" property="order_date"/>
+		<result column="business_cd" property="business_cd"/>
+		<result column="deliver_date" property="deliver_date"/>
+		<result column="emp_no" property="emp_no"/>
+		<result column="product_cd_name" property="product_cd_name"/>
+		<result column="rproduct_cd_name" property="rproduct_cd_name"/>
+		<result column="rproduct_name" property="rproduct_name"/>
+		<result column="cproduct_name" property="product_name"/>
+		<result column="consumption" property="consumption"/>
+		<result column="consumption_unit" property="consumption_unit"/>
+		<result column="instruction_qt" property="instruction_qt"/>
+	</resultMap>
+
+	<select id="getOrderListMap" resultMap="map2">
+    	SELECT o.order_cd, o.business_cd, o.product_cd_name, o.order_count, o.order_date, o.deliver_date, o.emp_no,c.cproduct_name, c.rproduct_cd_name, c.rproduct_name, c.consumption, c.consumption_unit
+		FROM order_management o right join consumption_management c 
+		ON o.product_cd_name = c.cproduct_cd_name
+		where o.order_cd is not null and o.con = '생산전'
+		group by o.order_cd
+		limit #{startRow},#{pageSize}
+    </select>
+    
+	<select id="getConsListMap" resultMap="map2">
+    	select c.rproduct_cd_name, c.rproduct_name, c.consumption, c.consumption_unit, i.instruction_qt
+		from consumption_management c join instruction i
+		on c.cproduct_cd_name = i.product_cd_name
+		where i.instruction_code = #{instruction_code}
+		<!--and o.con = '생산전' -->
+    </select>
+	
+	<select id="getordercount" resultType="java.lang.Integer">
+		SELECT count(*)
+        from order_management
+		where con = '생산전';
+    </select>
+
+	<resultMap type="map" id="map3">
+		<!-- column="DB의 열이름" property="해당 DB열에 대해 저장할 변수이름"-->
+		<result column="order_cd" property="order_cd"/>
+		<result column="product_cd_name" property="cproduct_cd_name"/>
+		<result column="cproduct_name" property="cproduct_name"/>
+		<result column="rproduct_cd_name" property="rproduct_cd_name"/>
+		<result column="rproduct_name" property="rproduct_name"/>
+		<result column="order_count" property="order_count"/>
+		<result column="consumption" property="consumption"/>
+		<result column="calconsumption" property="calconsumption"/>
+		<result column="stock_count" property="stock_count"/>
+		<result column="consumption_unit" property="consumption_unit"/>
+	</resultMap>
+
+	<select id="getStockCheck" resultMap="map3">
+		SELECT o.order_cd, o.product_cd_name, c.cproduct_name, c.rproduct_cd_name, c.rproduct_name,  o.order_count, c.consumption, c.consumption*o.order_count as calconsumption, s.stock_count, c.consumption_unit
+		from consumption_management c left join (select * from order_management where order_cd = #{order_cd}) o
+		ON o.product_cd_name = c.cproduct_cd_name
+		left join stock s
+		on c.rproduct_cd_name = s.product_cd_name
+		where o.order_cd is not null;
+    </select>
+	
+    <select id="orderinfo" resultType="com.itwillbs.domain.OrderDTO">
+        select *
+        from order_management
+        where order_cd = #{order_cd}
+    </select>
+    
+    <insert id="instinsertpro">
+ 		insert into instruction(instruction_code, line_cd, product_cd_name, order_cd, instruction_state, instruction_date, instruction_qt)
+		values(#{instruction_code}, #{line_cd}, #{product_cd_name}, #{order_cd}, #{instruction_state}, #{instruction_date}, #{instruction_qt})
+    </insert>
+    
+    <select id="instructioninfo" resultType="com.itwillbs.domain.InstructionDTO">
+        select *
+        from instruction
+        where instruction_code = #{instruction_code}
+    </select>
+    
+     <update id="instupdatepro">
+     	update instruction set line_cd = #{line_cd}, instruction_date = #{instruction_date}
+     	where instruction_code = #{instruction_code}
+    </update>
+    
+     <delete id="instdelete">
+    	delete from instruction
+    	where instruction_code = #{instruction_code}
+    </delete>
+    
+ 	 <select id="instructionlist" resultType="com.itwillbs.domain.InstructionDTO">
+    	select * from instruction
+    	<if test="search != null">
+    		<if test="select == 'line_cd'.toString()">
+        	where line_cd like CONCAT('%',#{search},'%')
+        	</if>
+        	<if test="select == 'instruction_code'.toString()">
+        	where instruction_code like CONCAT('%',#{search},'%')
+        	</if>
+    	</if>
+    	 order by instruction_state
+    	limit #{startRow},#{pageSize}	
+    </select>
+	
+	<select id="getinstructioncount" resultType="java.lang.Integer">
+        select count(*) from instruction
+        <if test="search != null">
+    	where order_cd like CONCAT('%',#{search},'%')
+    	</if>
+    </select>
+ 
+
+ 	<resultMap type="map" id="map1">
+		<result column="order_cd" property="order_cd"/>
+		<result column="product_cd_name" property="product_cd_name"/>
+	</resultMap>
+
+    <select id="getInstMap" resultMap="map1">
+    	select order_cd, product_cd_name from instruction
+    </select>
+ 
+	<select id="getInst" resultMap="map1">
+    	select order_cd, product_cd_name from instruction
+    	where instruction_code = #{instruction_code}
+    </select>
+    
+    <select id="getLine_cd" resultType="com.itwillbs.domain.LineDTO">
+    	select line_cd, line_name
+    	from line
+    	where line_status = 2 or line_status = 1
+    </select>
+    
+    
+    <select id="getLine_cdInst" resultType="java.lang.String">
+    	select line_cd
+    	from instruction
+    	where instruction_code = #{instruction_code}
+    </select>
+
+	<select id="getordercheck" resultType="java.lang.Integer">
+    	select count(*)
+    	from(select order_cd
+    	from order_management
+    	where order_cd = #{order_cd}) a
+    </select>
+    
+     <update id="updateCon2">
+    update instruction
+    set instruction_state = "생산중"
+    where instruction_code = #{cd}
+    </update>
+    
+     <update id="setlineState">
+    update line
+    set line_status = 1
+    where line_cd = #{line_cd}
+    </update>
+    
+    <update id="setlineState2">
+    update line
+    set line_status = 2
+    where line_cd = #{line_cd}
+    </update>
+    
+    <update id="updateCon3">
+    update instruction
+    set instruction_state = "생산완료"
+    where instruction_code = #{cd}
+    </update>
+    
+    <select id="getInstDate" resultType="java.lang.String">
+       select instruction_date
+		from instruction
+		where instruction_code = #{instruction_code}
+    </select>
+    
+    <select id="getInstCount" resultType="java.lang.Integer">
+       select instruction_qt
+		from instruction
+		where instruction_code = #{instruction_code}
+    </select>
+    
+     <select id="getInstCdname" resultType="java.lang.String">
+       select product_cd_name
+		from instruction
+		where instruction_code = #{instruction_code}
+    </select>
+    
+    <select id="getInstPch" resultType="java.lang.String">
+       select pchor_cd
+		from receive_schedule
+		where product_cd_name = #{product_cd_name}
+    </select>
+    
+    <select id="getWh_cd" resultType="java.lang.String">
+       select wh_cd
+		from receive_schedule
+		where product_cd_name = #{product_cd_name}
+    </select>
+    
+    <select id="getConsumption" resultType="com.itwillbs.domain.ConsumptionDTO">
+       select consumption
+		from consumption_management
+		where cproduct_cd_name = #{cproduct_cd_name} and rproduct_cd_name = #{rproduct_cd_name}
+    </select>
+       
+<!--     <resultMap type="map" id="map9"> -->
+<!-- 		<result column="rproduct_cd_name" property="rproduct_cd_name"/> -->
+<!-- 	</resultMap> -->
+
+    <select id="getcountcons" resultType="String">
+    	select rproduct_cd_name
+		from consumption_management
+		where cproduct_cd_name = #{cdname}
+    </select>
+    
+    <select id="getRel_schedule_cd" resultType="java.lang.String">
+        select *  
+		from release_schedule
+		order by rel_schedule_cd desc
+		limit 1
+    </select>
+    
+    <resultMap type="map" id="map4">
+		<result column="line_cd" property="line_cd"/>
+		<result column="product_cd_name" property="product_cd_name"/>
+		<result column="instruction_date" property="instruction_date"/>
+		<result column="instruction_qt" property="instruction_qt"/>
+		<result column="order_cd" property="order_cd"/>
+		<result column="emp_no" property="emp_no"/>
+		<result column="order_date" property="order_date"/>
+		<result column="deliver_date" property="deliver_date"/>
+		<result column="order_count" property="order_count"/>
+		<result column="business_name" property="business_name"/>	
+		<result column="product_name" property="product_name"/>
+	</resultMap>
+
+    <select id="getInstInfoMap" resultMap="map4">
+		select i.instruction_code, i.line_cd, i.product_cd_name, i.instruction_date, i.instruction_qt, o.order_cd, o.emp_no, o.order_date, o.deliver_date, o.order_count, b.business_name, p.product_name
+		from order_management o join instruction i
+		on o.order_cd = i.order_cd
+		join business b
+		on o.business_cd = b.business_cd
+        join product p
+        on o.product_cd_name = p.product_cd_name
+		where i.instruction_code = #{instruction_code}
+    </select>
+
+    
+    
+    
+    
+<!-- 	<select id="userCheck" resultType="com.itwillbs.domain.MemberDTO"> -->
+<!-- 		select * from members  -->
+<!-- 		where id = #{id} and pass = #{pass}  -->
+<!-- 	</select> -->
+
+<!-- 	<select id="selectBlog" parameterType="int" resultType="Blog">
+        select * from Blog where id = #{id}
+    </select>
+    
+    <insert id="">
+    </insert>
+    
+    <update id="">
+    </update>
+    
+    <delete id="">
+    </delete> -->
+    
+</mapper>

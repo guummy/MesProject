@@ -1,0 +1,172 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.itwillbs.mappers.OrderMapper">
+
+
+<select id="getMaxNum" resultType="java.lang.Integer">
+	select max(SUBSTR(order_cd, 9)) from order_management 
+	where SUBSTR(order_cd,3,6) = #{today};
+</select>
+
+	 <insert id="insertOrder">
+    	insert into order_management(order_cd, business_cd, emp_no, product_cd_name, order_date, deliver_date, order_count) 
+    	values(#{order_cd},#{business_cd},#{emp_no},#{product_cd_name},#{order_date},#{deliver_date},#{order_count})
+    </insert>
+    
+    <select id="getOrderCount" resultType="java.lang.Integer">
+    select count(*) from order_management
+    	<if test="search != null">
+   			where product_cd_name like CONCAT('%',#{search},'%')
+   			or con like CONCAT('%',#{search},'%')
+   		</if>
+    </select>
+    
+    <select id="getOrderCount2" resultType="java.lang.Integer">
+    select count(*) from order_management
+    	<if test="search != null">
+   			where product_cd_name like CONCAT('%',#{search},'%')
+   			or con like CONCAT('%',#{search},'%')
+   		</if>
+   		where con='생산완료'
+    </select>
+    
+    <select id="getOrderList" resultType="com.itwillbs.domain.OrderDTO">
+    select * from order_management
+    	<if test="search != null">
+   			where business_cd like CONCAT('%',#{search},'%')
+   			or con like CONCAT('%',#{search},'%')
+   		</if>
+    order by deliver_date asc
+    limit #{startRow} , #{pageSize}
+    </select>
+    
+    <select id="getOrderList2" resultType="com.itwillbs.domain.OrderDTO">
+    select * from order_management
+    	<if test="search != null">
+   			where business_cd like CONCAT('%',#{search},'%')
+   			or con like CONCAT('%',#{search},'%')
+   		</if>
+   		where con='생산완료'
+    order by deliver_date asc
+    limit #{startRow} , #{pageSize}
+    </select>
+    
+    <delete id="deleteOrder">
+    delete from order_management
+    where order_cd = #{cd}
+    </delete>
+    
+    <select id="getOrder" resultType="com.itwillbs.domain.OrderDTO">
+    	select * from order_management
+    	where order_cd = #{cd}
+    </select>
+    
+    <update id="updateOrder">
+    update order_management
+    set business_cd = #{business_cd}, emp_no = #{emp_no}, product_cd_name = #{product_cd_name},
+    order_date = #{order_date} , deliver_date = #{deliver_date}, order_count = #{order_count}
+    where order_cd = #{order_cd}
+    </update>
+    
+    <select id="getPCount" resultType="java.lang.Integer">
+  	 select count(*) from order_management
+   		<where>
+      	<choose>
+        	<when test="search != null">
+           	AND (business_cd like #{search} and con like '생산전')
+         	</when>
+        	<otherwise>
+            AND con like '생산전'
+         	</otherwise>
+      	</choose>
+   		</where>
+	</select>
+    
+    
+    <select id="getFCount" resultType="java.lang.Integer">
+    select count(*) from order_management
+  		<where>
+    	<choose>
+    		<when test="search != null">
+    		AND (business_cd like #{search} and con like '생산완료')
+    		</when>
+   		 	<otherwise>
+    		AND con like '생산완료'
+    		</otherwise>
+    	</choose>
+   	    </where>
+    </select>
+    
+     <select id="getWCount" resultType="java.lang.Integer">
+  	 select count(*) from order_management
+   		<where>
+      	<choose>
+        	<when test="search != null">
+           	AND (business_cd like #{search} and con like '생산대기')
+         	</when>
+        	<otherwise>
+            AND con like '생산대기'
+         	</otherwise>
+      	</choose>
+   		</where>
+	</select>
+    
+    
+    <select id="getICount" resultType="java.lang.Integer">
+    select count(*) from order_management
+  		<where>
+    	<choose>
+    		<when test="search != null">
+    		AND (business_cd like #{search} and con like '생산중')
+    		</when>
+   		 	<otherwise>
+    		AND con like '생산중'
+    		</otherwise>
+    	</choose>
+   	    </where>
+    </select>
+    
+    <select id="getProduct_cd_name" resultType="java.lang.String">
+  	 	select product_cd_name
+  		from order_management
+  		where order_cd = #{order_cd}
+	</select>
+	
+	<select id="getSumRelCount" resultType="java.lang.Integer">
+		select sum(rel_count)
+		from release_schedule
+		where pchor_cd = #{order_cd}
+	</select>
+	
+	<select id="getbfOr_count" resultType="java.lang.Integer">
+		select order_count
+		from order_management
+		where order_cd = #{order_cd}
+	</select>
+	
+	<select id="getCon" resultType="java.lang.Integer">
+		 select count(*) from instruction
+        where order_cd = #{cd}
+	</select>
+    
+    <update id="updateCon">
+    update order_management
+    set con = "생산대기"
+    where order_cd = #{cd}
+    </update>
+
+    <update id="updateCon2">
+    update order_management
+    set con = "생산중"
+    where order_cd = (select order_cd from instruction 
+	where instruction_code = #{cd});
+    </update>
+ 
+    <update id="updateCon3">
+    update order_management
+    set con = "생산완료"
+    where order_cd = (select order_cd from instruction 
+	where instruction_code = #{cd});
+    </update>
+</mapper>

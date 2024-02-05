@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<!-- 파일이름 대신 namespace 이름을 불러서 사용 -->
+
+<mapper namespace="com.itwillbs.mappers.InfoMapper">
+	
+	<insert id="insertLine">
+    	insert into line(line_cd, line_name, line_process, line_status, remarks)
+    	values(#{line_cd},#{line_name},#{line_process},#{line_status},#{remarks})
+    </insert>
+
+	<select id="getLineList" resultType="com.itwillbs.domain.LineDTO">
+    	select * from line
+    	<if test="search != null">
+    	<if test="select != null">
+    		<if test="select == 'line_cd'.toString()">
+        	where line_cd like CONCAT('%',#{search},'%')
+        	</if>
+        	<if test="select == 'line_name'.toString()">
+        	where line_name like CONCAT('%',#{search},'%')
+        	</if>
+        	<if test="select == 'line_process'.toString()">
+        	where line_process like CONCAT('%',#{search},'%')
+        	</if>
+        </if>
+        </if>
+    	limit #{startRow} , #{pageSize}
+    </select>
+    
+    <select id="getLineCount" resultType="java.lang.Integer">
+        select count(*) from line 
+        <if test="search != null">
+        <if test="select != null">
+        	<if test="select == 'line_cd'.toString()">
+        	where line_cd like CONCAT('%',#{search},'%')
+        	</if>
+        	<if test="select == 'line_name'.toString()">
+        	where line_name like CONCAT('%',#{search},'%')
+        	</if>
+        	<if test="select == 'line_process'.toString()">
+        	where line_process like CONCAT('%',#{search},'%')
+        	</if>
+        </if>
+        </if>
+    </select>
+
+	<select id="getLine" resultType="com.itwillbs.domain.LineDTO">
+        select * from line
+        where line_cd = #{line_cd}
+    </select>
+    
+    <update id="updateLine">
+    	update line
+    	set line_name = #{line_name}, line_process = #{line_process}, line_status = #{line_status}, remarks = #{remarks}
+    	where line_cd = #{line_cd}
+    </update>
+    
+    <delete id="deleteLine">
+    	delete from line
+    	where line_cd = #{line_cd}
+    </delete>
+    
+    <select id="getlinecdcheck" resultType="java.lang.Integer">
+    	select count(*)
+    	from(select line_cd
+    	from line
+    	where line_cd = #{line_cd}) a
+    </select>
+	    
+</mapper>
+
+
+

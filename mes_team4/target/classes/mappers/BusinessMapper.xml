@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.itwillbs.mappers.BusinessMapper">
+
+<insert id="insertBusiness">
+	insert into business(business_cd, business_dv, business_type, business_name,
+		business_ceo, business_tel, business_email, business_post, business_addr)
+	values(#{business_cd}, #{business_dv}, #{business_type}, #{business_name},
+		#{business_ceo}, #{business_tel}, #{business_email}, #{business_post}, #{business_addr})
+</insert>
+
+<select id="getONum" resultType="java.lang.Integer">
+	select max(SUBSTR(business_cd, 2)) from business where business_cd like 'O%'
+</select>
+
+<select id="getPNum" resultType="java.lang.Integer"> 
+	select max(SUBSTR(business_cd, 2)) from business where business_cd like 'P%'
+</select>
+
+<select id="getBusinessCount" resultType="java.lang.Integer">
+	select count(*) from business
+	<if test="search != null">
+   			where business_name like CONCAT('%',#{search},'%')
+   			or business_dv like CONCAT('%',#{search},'%')
+   		</if>
+</select>
+
+<select id="getBusinessList" resultType="com.itwillbs.domain.BusinessDTO">
+	select * from business
+	<if test="search != null">
+   			where business_name like CONCAT('%',#{search},'%')
+   			or business_dv like CONCAT('%',#{search},'%')
+   		</if>
+	order by business_name asc
+	limit #{startRow} , #{pageSize} 
+</select>
+
+<select id="getBusiListforor" resultType="com.itwillbs.domain.BusinessDTO">
+	select * from business
+	where business_cd like 'O%'
+	order by business_name asc 
+</select>
+
+<select id="getBusinessList2" resultType="com.itwillbs.domain.BusinessDTO">
+	select * from business
+	order by business_name asc 
+</select>
+
+<delete id="deleteBusiness">
+	delete from business
+	where business_cd = #{cd}
+</delete>
+
+<select id="getBusiness" resultType="com.itwillbs.domain.BusinessDTO">
+	select * from business
+	where business_cd = #{cd}
+</select>
+
+<update id="updateBusiness">
+		update business set business_cd = #{business_cd}, business_dv = #{business_dv}, business_type = #{business_type}, 
+		business_name = #{business_name}, business_ceo = #{business_ceo}, business_tel = #{business_tel}, 
+		business_email = #{business_email}, business_post = #{business_post}, business_addr = #{business_addr}
+		where business_cd = #{business_cd}
+</update>
+
+<select id="getCon" resultType="java.lang.Integer">
+	select count(*)  from order_management 
+    where business_cd = #{cd} and con = "생산전"
+</select>
+
+
+
+</mapper>

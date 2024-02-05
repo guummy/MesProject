@@ -1,0 +1,88 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<!-- 파일이름 대신 namespace 이름을 불러서 사용 -->
+
+<mapper namespace="com.itwillbs.mappers.systemMapper">
+	
+	<!-- ?대신 memberDTO의 멤버변수명 사용 #{id}-->
+	<insert id="memberinsertpro">
+		insert into employees(emp_no,dept_cd,grade_cd,emp_priv,emp_name,emp_pass) 
+		values(#{emp_no},#{dept_cd},#{grade_cd},#{emp_priv},#{emp_name},#{emp_pass})
+	</insert>
+
+	<select id="getMaxEmp_no" resultType="java.lang.Integer">
+		select max(emp_no) from employees
+	</select>
+	
+	 <select id="getsystemlist" resultType="com.itwillbs.domain.SystemDTO">
+    	select * from employees
+    	<if test="search != null">
+    	where emp_name like CONCAT('%',#{search},'%')
+    	</if>
+    	order by emp_no
+    	limit #{startRow},#{pageSize}	
+    </select>
+	
+	<select id="getsystemcount" resultType="java.lang.Integer">
+        select count(*) from employees
+        <if test="search != null">
+    	where emp_name like CONCAT('%',#{search},'%')
+    	</if>
+    </select>
+    
+    <select id="memberinfo" resultType="com.itwillbs.domain.SystemDTO">
+        select dept_cd,grade_cd,emp_priv,emp_name,emp_pass,emp_no
+        from employees
+        where emp_no = #{emp_no}
+    </select>
+    
+    <update id="memberupdatepro">
+    	update employees 
+    	set emp_name = #{emp_name}, emp_pass = #{emp_pass}, dept_cd = #{dept_cd}, grade_cd = #{grade_cd}, emp_priv = #{emp_priv}
+    	where emp_no = #{emp_no}	
+    </update>
+ 
+  	<delete id="memberdelete">
+  		delete from employees
+  		where emp_no = #{emp_no}
+    </delete> 
+
+	<select id="userCheck" resultType="com.itwillbs.domain.SystemDTO">
+        select * from employees
+		where emp_no = #{emp_no} and emp_pass = #{emp_pass}
+    </select>
+ 
+<!-- 	<select id="userCheck" resultType="com.itwillbs.domain.MemberDTO"> -->
+<!-- 		select * from members  -->
+<!-- 		where id = #{id} and pass = #{pass}  -->
+<!-- 	</select> -->
+
+<!-- 	<select id="selectBlog" parameterType="int" resultType="Blog">
+        select * from Blog where id = #{id}
+    </select>
+    
+    <insert id="">
+    </insert>
+    
+    <update id="">
+    </update>
+    
+    <delete id="">
+    </delete> -->
+    
+     
+    <update id="mypagePro">
+    	update employees 
+    	set emp_pass = #{emp_pass}
+    	where emp_no = #{emp_no}	
+    </update>
+    
+
+    <select id="getMemberforor" resultType="com.itwillbs.domain.SystemDTO">
+	select * from employees
+	order by emp_no asc 
+	</select>
+    
+</mapper>

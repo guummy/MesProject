@@ -1,0 +1,210 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<!-- 파일이름 대신 namespace 이름을 불러서 사용 -->
+
+<mapper namespace="com.itwillbs.mappers.deliverMapper">
+	
+	<!-- ?대신 deliverDTO의 멤버변수명 사용 #{id}-->
+	<insert id="insertDeliver">
+		insert into shipment_management(deliver_cd, business_cd, product_cd_name, order_cd, deliver_date, deliver_count,emp_no)
+							
+		values(#{deliver_cd},#{business_cd},#{product_cd_name}, #{order_cd},#{deliver_date},#{deliver_count},#{emp_no})
+	</insert>
+	
+	<select id="getDeliver_cd" resultType="java.lang.String">
+        select *  
+		from shipment_management
+		order by deliver_cd desc
+		limit 1
+    </select>
+	
+	<select id="getinstcheck" resultType="java.lang.Integer">
+    	select count(*)
+    	from(select order_cd
+    	from shipment_management
+    	where order_cd = #{order_cd}) a
+    </select>
+	
+	<select id="getDeliverList" resultType="com.itwillbs.domain.DeliverDTO">
+    	select * from shipment_management
+    	<if test="search != null">
+    	<if test="select != null">
+    		<if test="select == 'deliver_cd'.toString()">
+        	where deliver_cd like CONCAT('%',#{search},'%')
+        	</if>
+        	<if test="select == 'business_cd'.toString()">
+        	where business_cd like CONCAT('%',#{search},'%')
+        	</if>
+        	<if test="select == 'product_cd_name'.toString()">
+        	where product_cd_name like CONCAT('%',#{search},'%')
+        	</if>
+        	<if test="select == 'order_cd'.toString()">
+        	where order_cd like CONCAT('%',#{search},'%')
+        	</if>
+        </if>
+        </if>
+    	order by deliver_date asc
+    	limit #{startRow}, #{pageSize}
+    </select>
+    
+    <select id="getDeliver" resultType="com.itwillbs.domain.DeliverDTO">
+    select * from shipment_management
+    where deliver_cd = #{deliver_cd} 
+<!--     and business_cd=#{business_cd} and product_cd_name =#{product_cd_name} -->
+    
+    </select>
+    
+    
+     <select id="getreldat" resultType="com.itwillbs.domain.ReleaseDTO">   
+    select rel_date from release_schedule
+	where pchor_cd = #{order_cd}
+    order by rel_date desc
+    limit 1;
+    </select>
+    
+	
+    <update id="updateDeliver">
+    	update shipment_management
+    	set deliver_cd = #{deliver_cd}, business_cd = #{business_cd}, product_cd_name = #{product_cd_name}, 
+    	order_cd = #{order_cd}, deliver_date = #{deliver_date}, deliver_count = #{deliver_count}, emp_no = #{emp_no}
+    	where deliver_cd = #{deliver_cd}
+    </update>
+    
+    
+<!--     모르겠네. -->
+<!--     <update id="updateDeliver"> -->
+<!--     update order_management -->
+<!--     set con = '생산완료' -->
+<!--     where deliver_cd = #{deliver_cd} -->
+<!--     </update> -->
+    
+    
+    
+<!--      <update id="updateDeliver"> -->
+<!--     	update shipment_management -->
+<!--     	set deliver_count = #{deliver_count} -->
+<!--     	where deliver_cd = #{deliver_cd} -->
+<!--     </update> -->
+	
+	<select id="getDeliverCount" resultType="java.lang.Integer">
+    select count(*) from shipment_management
+    <if test="search != null">
+    	<if test="select != null">
+    		<if test="select == 'deliver_cd'.toString()">
+        	where deliver_cd like CONCAT('%',#{search},'%')
+        	</if>
+        	<if test="select == 'business_cd'.toString()">
+        	where business_cd like CONCAT('%',#{search},'%')
+        	</if>
+        	<if test="select == 'product_cd_name'.toString()">
+        	where product_cd_name like CONCAT('%',#{search},'%')
+        	</if>
+        	<if test="select == 'order_cd'.toString()">
+        	where order_cd like CONCAT('%',#{search},'%')
+        	</if>
+    	</if>
+    </if>
+<!--     	<if test="search != null"> -->
+<!--     		where deliver_cd like CONCAT('%',#{search},'%') -->
+<!--     	</if> -->
+
+    </select>
+    
+    <delete id="deleteDeliver">
+    delete from shipment_management
+    where deliver_cd = #{deliver_cd}
+    </delete>
+	
+	<resultMap type="map" id="map4">
+		<result column="rel_schedule_cd"  property="rel_schedule_cd"/>
+		<result column="wh_name"  property="wh_name"/>
+		<result column="product_name"  property="product_name"/>
+		<result column="product_dv"  property="product_dv"/>
+		<result column="rel_date"  property="rel_date"/>
+		<result column="rel_count"  property="rel_count"/>
+		<result column="remarks"  property="remarks"/>
+		<result column="pchor_cd"  property="pchor_cd"/>
+	</resultMap>
+	
+	<select id="getRelList2" resultMap="map4">
+			select r.rel_schedule_cd, w.wh_name, p.product_name, p.product_dv, r.rel_date, r.rel_count, r.remarks, r.pchor_cd
+		   from release_schedule as r
+		   left join product as p
+		   on r.product_cd_name = p.product_cd_name
+		   left join warehouse as w
+		   on r.wh_cd = w.wh_cd
+		   where p.product_dv='완제품'
+        order by rel_schedule_cd desc 
+        limit #{startRow}, #{pageSize}   	
+    </select>
+    
+    <select id="getRelCount" resultType="java.lang.Integer">
+        select count(*) from release_schedule as r
+		   left join product as p
+		   on r.product_cd_name = p.product_cd_name
+		   left join warehouse as w
+		   on r.wh_cd = w.wh_cd
+        <if test="search != null">
+        <if test="select != null">
+			<if test="select == 'wh_name'.toString()">
+				where w.wh_name like CONCAT('%',#{search},'%')
+			</if>
+			<if test="select == 'product_name'.toString()">
+				where p.product_name like CONCAT('%',#{search},'%')
+			</if>
+        </if>
+        </if> 
+         where p.product_dv='완제품'
+    </select>
+	
+	
+	
+<!-- 	비즈니스 코드 갖고 오기 -->
+	<resultMap type="map" id="map1">
+		<result column="business_cd" property="business_cd"/>
+	</resultMap>
+	<select id="getInstMap" resultMap="map1">
+		select distinct business_cd from business;
+	</select>
+	
+	
+	
+<!-- 수주코드 갖고오기	 -->
+	<resultMap type="map" id="map2">
+		<result column="order_cd" property="order_cd"/>
+	</resultMap>
+	<select id="getInstMap2" resultMap="map2">
+		select distinct order_cd from order_management;
+	</select>
+	
+	
+	
+<!-- 품목코드 갖고오기 -->
+<resultMap type="map" id="map3">
+		<result column="product_cd_name" property="product_cd_name"/>
+	</resultMap>
+	<select id="getInstMap3" resultMap="map3">
+		select distinct product_cd_name from product;
+	</select>	
+	
+	
+	
+<!-- 	<select id="userCheck" resultType="com.itwillbs.domain.MemberDTO"> -->
+<!-- 		select * from members  -->
+<!-- 		where id = #{id} and pass = #{pass}  -->
+<!-- 	</select> -->
+
+<!-- 	<select id="selectBlog" parameterType="int" resultType="Blog"> -->
+<!--         select * from Blog where id = #{id} -->
+<!--     </select> -->
+    
+<!--     <insert id=""> -->
+<!--     </insert> -->
+    
+    
+</mapper>
+
+
+

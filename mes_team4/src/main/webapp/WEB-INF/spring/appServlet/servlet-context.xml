@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans:beans xmlns="http://www.springframework.org/schema/mvc"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:beans="http://www.springframework.org/schema/beans"
+	xmlns:context="http://www.springframework.org/schema/context"
+	xsi:schemaLocation="http://www.springframework.org/schema/mvc https://www.springframework.org/schema/mvc/spring-mvc.xsd
+		http://www.springframework.org/schema/beans https://www.springframework.org/schema/beans/spring-beans.xsd
+		http://www.springframework.org/schema/context https://www.springframework.org/schema/context/spring-context.xsd">
+
+	<!-- DispatcherServlet Context: defines this servlet's request-processing infrastructure -->
+	
+	<!-- Enables the Spring MVC @Controller programming model -->
+<!-- 	2) 패키지 검색하면 annotation(@) 찾음 => 기능부여 => 기능에 따라서 자동으로 동작  -->
+
+	<annotation-driven />
+
+<!-- 		4) 이미지, 자바스크립트, css 파일 위치 설정 -->
+
+	<!-- Handles HTTP GET requests for /resources/** 
+	by efficiently serving up static resources in the ${webappRoot}/resources directory -->
+	<resources mapping="/resources/**" location="/resources/" />
+
+<!-- 	3) jsp 파일 위치 설정 => prefix 접두사  , suffix 접미사-->
+
+	<!-- Resolves views selected for rendering by 
+	@Controllers to .jsp resources in the /WEB-INF/views directory -->
+	<beans:bean class="org.springframework.web.servlet.view.InternalResourceViewResolver">
+		<beans:property name="prefix" value="/WEB-INF/views/" />
+		<beans:property name="suffix" value=".jsp" />
+	</beans:bean>
+	
+<!-- 	1) com.itwillbs.myweb 패키지  자동으로 스캔(검색)
+           패키지(폴더)가 추가가 되어지면  자동으로 스캔 패티지 추가-->
+           
+	<context:component-scan base-package="com.itwillbs.controller" />
+	<context:component-scan base-package="com.itwillbs.service" />
+	<context:component-scan base-package="com.itwillbs.dao" />
+	
+	
+	
+</beans:beans>

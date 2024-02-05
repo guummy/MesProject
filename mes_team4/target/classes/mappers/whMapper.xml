@@ -1,0 +1,117 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<!-- 파일이름 대신 namespace 이름을 불러서 사용 -->
+
+<mapper namespace="com.itwillbs.mappers.whMapper">
+	
+	<!-- ?대신 WHDTO의 멤버변수명 사용-->
+	<insert id="insertwh">
+		insert into warehouse(wh_cd, wh_name, wh_dv,wh_addr, wh_tel, wh_use, remarks) 
+		values(#{wh_cd},#{wh_name},#{wh_dv},#{wh_addr},#{wh_tel},#{wh_use},#{remarks})
+	</insert>
+	
+	<select id="getMaxNum" resultType="java.lang.Integer">
+        select max(wh_cd) from warehouse
+    </select>
+	
+	<select id="getMNum" resultType="java.lang.Integer">
+	select * from warehouse where wh_cd like 'M%'
+<!-- 	select max(SUBSTR(wh_cd, 2)) from warehouse where wh_cd like 'M%' -->
+	</select>
+
+	<select id="getPNum" resultType="java.lang.Integer"> 
+		select * from warehouse where wh_cd like 'P%'
+<!-- 		select max(SUBSTR(wh_cd, 2)) from warehouse where wh_cd like 'P%' -->
+	</select>
+	
+	<select id="getWhList" resultType="com.itwillbs.domain.WHDTO">
+        select * from warehouse
+        <if test="search != null">
+        <if test="select != null">
+        	<if test="select == 'wh_name'.toString()">
+        	where wh_name like CONCAT('%',#{search},'%')
+        	</if>
+        	<if test="select == 'wh_addr'.toString()">
+        	where wh_addr like CONCAT('%',#{search},'%')
+        	</if>
+        	<if test="select == 'wh_dv'.toString()">
+        	where wh_dv like CONCAT('%',#{search},'%')
+        	</if>
+        	<if test="select == 'wh_use'.toString()">
+        	where wh_use like CONCAT('%',#{search},'%')
+        	</if>
+        </if>
+        </if>
+		order by wh_date desc
+        limit #{startRow}, #{pageSize} 
+    </select>
+	
+	<select id="getWhCount" resultType="java.lang.Integer">
+        select count(*) from warehouse
+         <if test="search != null">
+        <if test="select != null">
+        	<if test="select == 'wh_name'.toString()">
+        	where wh_name like CONCAT('%',#{search},'%')
+        	</if>
+        	<if test="select == 'wh_addr'.toString()">
+        	where wh_addr like CONCAT('%',#{search},'%')
+        	</if>
+        	<if test="select == 'wh_dv'.toString()">
+        	where wh_dv like CONCAT('%',#{search},'%')
+        	</if>
+        	<if test="select == 'wh_use'.toString()">
+        	where wh_use like CONCAT('%',#{search},'%')
+        	</if>
+        </if>
+        </if>
+<!--         <if test="search != null"> -->
+<!--         <if test="select != null"> -->
+<!-- 			<if test="select == 'wh_name'.toString()"> -->
+<!-- 				where wh_name like CONCAT('%',#{search},'%') -->
+<!-- 			</if> -->
+<!-- 			<if test="select == 'wh_addr'.toString()"> -->
+<!-- 				where wh_addr like CONCAT('%',#{search},'%') -->
+<!-- 			</if> -->
+<!-- 			<if test="select == 'wh_dv'.toString()"> -->
+<!-- 				where wh_dv like CONCAT('%',#{search},'%') -->
+<!-- 			</if> -->
+<!--         </if> -->
+<!--         </if> -->
+    </select>
+	
+    <delete id="deletewh">
+    delete from warehouse
+    where wh_cd = #{wh_cd}       
+    </delete> 
+    
+    <select id="getwh" resultType="com.itwillbs.domain.WHDTO">
+        select * from warehouse
+        where wh_cd = #{wh_cd}
+    </select>
+    
+     <update id="updatewh">
+	 	update warehouse set wh_name = #{wh_name}, wh_dv = #{wh_dv}, wh_addr = #{wh_addr}, 
+	 	                     wh_tel = #{wh_tel}, wh_use = #{wh_use}, remarks = #{remarks} 
+	 	where wh_cd = #{wh_cd}                     
+    </update>
+    
+ 	<select id="getwhcheck" resultType="java.lang.Integer">
+    	select count(*)
+    	from(select wh_name
+    		 from warehouse
+    		 where wh_name = #{wh_name}) a
+    </select>
+    
+<!--     <select id="selectId" resultType="boolean"> -->
+<!-- 		select count(*) -->
+<!-- 		from warehouse -->
+<!-- 		where wh_name = #{wh_name} -->
+<!-- 	</select> -->
+    
+    
+</mapper>
+
+
+

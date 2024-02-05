@@ -1,0 +1,120 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<!-- 파일이름 대신 namespace 이름을 불러서 사용 -->
+
+<mapper namespace="com.itwillbs.mappers.StockMapper">
+	
+<!-- 	<insert id="insertStock"> -->
+<!--     	insert into stock(stock_cd, wh_cd, product_cd_name, stock_count) -->
+<!--     	values(#{stock_cd},#{wh_cd},#{product_cd_name},#{stock_count}) -->
+<!--     </insert> -->
+
+<!-- 	<select id="getStockList" resultType="com.itwillbs.domain.StockDTO"> -->
+<!--     	select * from stock -->
+<!--     	limit #{startRow} , #{pageSize} -->
+<!--     </select> -->
+    
+    <select id="getStockCount" resultType="java.lang.Integer">
+        select count(*)
+        from(select s.stock_cd, s.product_cd_name, p.product_name, s.stock_count
+			 from stock s join product p
+			 			  on s.product_cd_name = p.product_cd_name
+       	<if test="search != null">
+        <if test="select != null">
+        	<if test="select == 'stock_cd'.toString()">
+        	where stock_cd like CONCAT('%',#{search},'%')
+        	</if>
+        	<if test="select == 'product_cd_name'.toString()">
+        	where s.product_cd_name like CONCAT('%',#{search},'%')
+        	</if>
+        </if>
+        </if>) a
+    </select>
+    
+<!--      <select id="getStockCount2" resultType="java.lang.Integer"> -->
+<!--         select count(*) -->
+<!--         from(select s.stock_cd, s.wh_cd, w.wh_name, s.rec_schedule_cd, r.rec_date, s.product_cd, p.product_name, s.stock_count -->
+<!-- 			from stock s join warehouse w -->
+<!-- 						 on s.wh_cd = w.wh_cd -->
+<!--       			      	 join receive_schedule r -->
+<!--        			   		 on s.rec_schedule_cd=r.rec_schedule_cd -->
+<!--        			    	 join product p -->
+<!--        			      	 on s.product_cd=p.product_cd) a -->
+<!--     </select> -->
+
+	<select id="getStock" resultType="com.itwillbs.domain.StockDTO">
+        select * from stock
+        where stock_cd = #{stock_cd}
+    </select>
+    
+<!--      <select id="getStock_cd" resultType="java.lang.String"> -->
+<!--         select max(stock_cd) -->
+<!--         from stock -->
+<!--     </select> -->
+    
+    <update id="updateStock">
+    	update stock
+    	set stock_count = #{stock_count}
+    	where stock_cd = #{stock_cd}
+    </update>
+    
+<!--     <delete id="deleteStock"> -->
+<!--     	delete from stock -->
+<!--     	where stock_cd = #{stock_cd} -->
+<!--     </delete> -->
+    
+    <resultMap type="map" id="stockmap">
+    	<result column="stock_cd" property="stock_cd"/>
+		<result column="product_cd_name" property="product_cd_name"/>
+		<result column="product_name" property="product_name"/>
+		<result column="stock_count" property="stock_count"/>
+    </resultMap>
+    
+    <select id="getStockMap" resultMap="stockmap">
+			select s.stock_cd, s.product_cd_name, p.product_name, s.stock_count
+			from stock s join product p
+			 			 on s.product_cd_name = p.product_cd_name
+       	<if test="search != null">
+        <if test="select != null">
+        	<if test="select == 'stock_cd'.toString()">
+        	where stock_cd like CONCAT('%',#{search},'%')
+        	</if>
+        	<if test="select == 'product_cd_name'.toString()">
+        	where s.product_cd_name like CONCAT('%',#{search},'%')
+        	</if>
+        </if>
+        </if>       	
+       		order by stock_cd
+       		limit #{startRow} , #{pageSize}
+    </select>
+    
+<!-- 	<resultMap type="map" id="map1"> -->
+<!-- 		<result column="wh_cd" property="wh_cd"/> -->
+<!-- 	</resultMap> -->
+
+<!--     <select id="getwhMap" resultMap="map1"> -->
+<!--     	select distinct wh_cd from warehouse -->
+<!--     </select> -->
+    
+<!--     <resultMap type="map" id="map2"> -->
+<!-- 		<result column="rec_schedule_cd" property="rec_schedule_cd"/> -->
+<!-- 	</resultMap> -->
+
+<!--     <select id="getrecMap" resultMap="map2"> -->
+<!--     	select distinct rec_schedule_cd from receive_schedule -->
+<!--     </select> -->
+    
+<!--     <resultMap type="map" id="map3"> -->
+<!-- 		<result column="product_cd" property="product_cd"/> -->
+<!-- 	</resultMap> -->
+
+<!--     <select id="getprodMap" resultMap="map3"> -->
+<!--     	 select distinct product_cd from product -->
+<!--     </select> -->
+
+</mapper>
+
+
+

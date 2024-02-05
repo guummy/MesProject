@@ -1,0 +1,141 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<!-- 파일이름 대신 namespace 이름을 불러서 사용 -->
+
+<mapper namespace="com.itwillbs.mappers.productMapper">
+	
+	<!-- ?대신 productDTO의 멤버변수명 사용 #{id}-->
+	<insert id="insertProduct">
+		insert into product(product_type_cd,product_cd,product_cd_name,product_name,product_dv,business_cd,product_unit,remarks) 
+		values(#{product_type_cd},#{product_cd},#{product_cd_name},#{product_name},#{product_dv},#{business_cd},#{product_unit},#{remarks})
+	</insert>
+	
+	<select id="getStock_cd" resultType="java.lang.String">
+        select *  
+		from stock
+		order by stock_cd desc
+		limit 1
+    </select>
+	
+	<insert id="insertStock">
+		insert into stock(stock_cd,product_cd_name)
+		values(#{stock_cd},#{product_cd_name})
+	</insert>
+	
+	<resultMap type="map" id="map1">
+		<result column="business_cd" property="business_cd"/>
+	</resultMap>
+	
+	<select id="getInstMap" resultMap="map1">
+		select business_cd from business
+	</select>
+	
+	<resultMap type="map" id="map2">
+		<result column="product_cd"  property="product_cd"/>
+		<result column="product_type_cd"  property="product_type_cd"/>
+		<result column="product_dv"  property="product_dv"/>
+		<result column="product_cd_name"  property="product_cd_name"/>
+		<result column="product_name"  property="product_name"/>
+		<result column="business_cd"  property="business_cd"/>
+		<result column="business_name"  property="business_name"/>
+		<result column="product_unit"  property="product_unit"/>
+		<result column="remarks"  property="remarks"/>
+	</resultMap>
+	
+	<select id="getProductList" resultMap="map2">
+        select p.product_cd,p.product_dv,p.product_cd_name, p.product_name, b.business_cd, b.business_name, p.product_unit, p.remarks
+        from product p join business b
+        on p.business_cd=b.business_cd
+        join product_type t
+        on p.product_type_cd=t.product_type_cd
+        <if test="search != null">
+        <if test="select != null">
+			<if test="select == 'product_dv'.toString()">
+				where product_dv like CONCAT('%',#{search},'%')
+			</if>
+			<if test="select == 'product_cd_name'.toString()">
+				where product_cd_name like CONCAT('%',#{search},'%')
+			</if>
+			<if test="select == 'product_name'.toString()">
+				where product_name like CONCAT('%',#{search},'%')
+			</if>
+        </if>
+        </if>
+        
+        order by product_dv  
+        limit #{startRow}, #{pageSize}   	
+    </select>
+    
+    <select id="getProductCount" resultType="java.lang.Integer">
+        select count(*) from product 
+        <if test="search != null">
+        <if test="select != null">
+			<if test="select == 'product_dv'.toString()">
+				where product_dv like CONCAT('%',#{search},'%')
+			</if>
+			<if test="select == 'product_cd_name'.toString()">
+				where product_cd_name like CONCAT('%',#{search},'%')
+			</if>
+			<if test="select == 'product_name'.toString()">
+				where product_name like CONCAT('%',#{search},'%')
+			</if>
+        </if>
+        </if>
+    </select>
+    
+     <select id="getProductCount2" resultType="java.lang.Integer">
+        select count(*)
+        from(        select p.product_dv,p.product_cd_name, p.product_name, b.business_cd, b.business_name, p.product_unit, p.remarks
+      				  from product p join business b
+      				  on p.business_cd=b.business_cd
+       				  join product_type t
+      				  on p.product_type_cd=t.product_type_cd) a
+    </select>
+    
+    <select id="getProduct_cd" resultType="java.lang.String">
+        select max(product_cd)
+        from product
+    </select>
+    
+    <delete id="deleteProduct">
+    	delete from product
+    	where product_cd_name = #{product_cd_name}
+    </delete>
+    
+    <select id="getProduct" resultType="com.itwillbs.domain.ProductDTO">
+        select * from product
+        where product_cd_name = #{product_cd_name}
+    </select>
+
+    <update id="updateProduct">
+    	update product set product_dv = #{product_dv}, product_name = #{product_name}, business_cd = #{business_cd}, product_unit = #{product_unit}, remarks = #{remarks}
+    	where product_cd_name = #{product_cd_name}   
+    </update>
+    
+	<select id="getProductforor" resultType="com.itwillbs.domain.ProductDTO">
+		select * from product
+		where product_dv like "완제품"
+		order by product_cd asc 
+	</select>
+
+    <select id="getPPNum" resultType="java.lang.Integer">
+	select max(SUBSTR(product_cd, 3)) from product where product_cd like 'PP%'
+	</select>
+
+	<select id="getMMNum" resultType="java.lang.Integer"> 
+	select max(SUBSTR(product_cd, 3)) from product where product_cd like 'MM%'
+	</select>
+	
+	<select id="getprodcheck" resultType="java.lang.Integer">
+    	select count(*)
+    	from(select product_cd_name
+    		 from product
+    		 where product_cd_name = #{product_cd_name}) a
+    </select>
+	
+</mapper>
+
+
+

@@ -1,0 +1,180 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<!-- 파일이름 대신 namespace 이름을 불러서 사용 -->
+
+<mapper namespace="com.itwillbs.mappers.releaseMapper">
+	
+	<insert id="insertrel">
+	insert into release_schedule(rel_schedule_cd, wh_cd, product_cd_name, remarks, rel_count, pchor_cd, released) 
+	values(#{rel_schedule_cd}, #{wh_cd}, #{product_cd_name}, #{remarks}, #{rel_count}, #{pchor_cd}, #{released})
+	</insert>
+	
+	<insert id="insertrel2">
+	insert into release_schedule(rel_schedule_cd, wh_cd, product_cd_name, rel_date, rel_count, pchor_cd) 
+	values(#{rel_schedule_cd}, #{wh_cd}, #{product_cd_name}, #{rel_date}, #{rel_count}, #{pchor_cd})
+	</insert>
+	
+<!-- 	출고코드번호 -->
+	<select id="getLNum" resultType="java.lang.Integer">
+<!-- 	select max(SUBSTR(rel_schedule_cd, 2)) from release_schedule where rel_schedule_cd like 'L%' --> 
+		select * from release_schedule
+	</select>
+
+<!-- 조인 리스트	 -->
+<!-- update페이지 -->
+	<resultMap type="map" id="map1">
+		<result column="rel_schedule_cd"  property="rel_schedule_cd"/>
+		<result column="rec_schedule_cd"  property="rec_schedule_cd"/>
+		<result column="wh_cd"  property="wh_cd"/>
+		<result column="pchor_cd"  property="pchor_cd"/>
+		<result column="product_cd_name"  property="product_cd_name"/>
+		<result column="rel_date"  property="rel_date"/>
+		<result column="rec_date"  property="rec_date"/>
+		<result column="rel_count"  property="rel_count"/>
+		<result column="remarks"  property="remarks"/>
+		<result column="stock_count"  property="stock_count"/>
+		<result column="released"  property="released"/>
+	</resultMap>
+
+	<select id="getrec" resultMap="map1">
+		select l.rel_schedule_cd, c.rec_schedule_cd, w.wh_name,l.wh_cd, c.pchor_cd, c.rec_count,c.product_cd_name, 
+			   l.rel_date, l.rel_count, l.remarks, s.stock_count, c.rec_date, l.released
+			from release_schedule as l 
+			left join receive_schedule as c
+			on l.wh_cd = c.wh_cd
+			left join stock as s
+			on l.product_cd_name = s.product_cd_name
+	        left join warehouse as w
+	        on l.wh_cd = w.wh_cd
+	        where rel_schedule_cd = #{rel_schedule_cd} and c.product_cd_name = #{product_cd_name}						
+	</select>
+	
+	 <update id="updaterel">
+	 	update release_schedule set wh_cd = #{wh_cd}, product_cd_name = #{product_cd_name}, 
+	 								pchor_cd = #{pchor_cd}, rel_date = #{rel_date}, remarks = #{remarks},
+	 	                            rel_count = #{rel_count}, released = #{released}
+	 	where rel_schedule_cd = #{rel_schedule_cd}                     
+    </update>
+<!-- update페이지 -->
+  
+<!-- 메인페이지 -->
+	<resultMap type="map" id="map2">
+		<result column="rel_schedule_cd"  property="rel_schedule_cd"/>
+		<result column="business_name"  property="business_name"/>
+		<result column="emp_name"  property="emp_name"/>
+		<result column="product_cd_name"  property="product_cd_name"/>
+		<result column="product_name"  property="product_name"/>
+		<result column="rel_date"  property="rel_date"/>
+		<result column="rel_count"  property="rel_count"/>
+		<result column="remarks"  property="remarks"/>
+		<result column="pchor_cd"  property="pchor_cd"/>
+		<result column="released"  property="released"/>
+	</resultMap>
+	
+	<select id="getRelList" resultMap="map2">
+	select r.rel_schedule_cd, w.wh_name, p.product_name, r.rel_date, r.rel_count, r.remarks, r.product_cd_name, r.pchor_cd,r.released
+		   from release_schedule as r
+		   left join product as p
+		   on r.product_cd_name = p.product_cd_name
+		   left join warehouse as w
+		   on r.wh_cd = w.wh_cd
+        <if test="search != null">
+        <if test="select != null">
+			<if test="select == 'wh_name'.toString()">
+				where w.wh_name like CONCAT('%',#{search},'%')
+			</if>
+			<if test="select == 'product_name'.toString()">
+				where p.product_name like CONCAT('%',#{search},'%')
+			</if>
+			<if test="select == 'released'.toString()">
+				where r.released like CONCAT('%',#{search})
+			</if>
+        </if>
+        </if>
+        order by rel_schedule_cd desc
+        limit #{startRow}, #{pageSize}   	
+    </select>
+    
+    <resultMap type="map" id="map3">
+		<result column="rel_schedule_cd"  property="rel_schedule_cd"/>
+		<result column="rec_date"  property="rec_date"/>
+		<result column="remarks"  property="remarks"/>
+		<result column="rec_count"  property="rec_count"/>
+		<result column="pchor_cd"  property="pchor_cd"/>
+		<result column="wh_cd"  property="wh_cd"/>
+		<result column="product_cd_name"  property="product_cd_name"/>
+		<result column="stock_count"  property="stock_count"/>
+	</resultMap>
+    
+   <select id="getReceiveSList" resultMap="map3">
+	select r.rec_schedule_cd, r.rec_date, r.rec_count, r.pchor_cd, w.wh_name, r.wh_cd, p.product_name,p.product_cd_name, s.stock_count
+        from receive_schedule as r 
+        left join stock as s
+        on r.product_cd_name=s.product_cd_name
+        left join warehouse w
+        on r.wh_cd = w.wh_cd
+        left join product as p
+        on r.product_cd_name=p.product_cd_name
+        order by rec_schedule_cd
+    </select>
+    
+<!-- 	페이징 -->
+	<select id="getRelCount" resultType="java.lang.Integer">
+        select count(*) from release_schedule as r
+		   left join product as p
+		   on r.product_cd_name = p.product_cd_name
+		   left join warehouse as w
+		   on r.wh_cd = w.wh_cd
+        <if test="search != null">
+        <if test="select != null">
+			<if test="select == 'wh_name'.toString()">
+				where w.wh_name like CONCAT('%',#{search},'%')
+			</if>
+			<if test="select == 'product_name'.toString()">
+				where p.product_name like CONCAT('%',#{search},'%')
+			</if>
+			<if test="select == 'released'.toString()">
+				where r.released like CONCAT('%',#{search})
+			</if>
+        </if>
+        </if> 
+    </select>
+	
+    <delete id="deleterel">
+    delete from release_schedule
+    where rel_schedule_cd = #{rel_schedule_cd}       
+    </delete> 
+    
+    <select id="getrel" resultType="com.itwillbs.domain.ReleaseDTO">
+        select * from release_schedule
+        where rel_schedule_cd = #{rel_schedule_cd}
+    </select>
+    
+	<select id="getRel_cd" resultType="java.lang.String">
+			select *  
+			from release_schedule
+			order by rel_schedule_cd desc
+			limit 1
+		</select>
+		
+<!-- 		재고 현황 관련 -->
+		
+		<select id="getbfRel_count" resultType="java.lang.Integer">
+			select rel_count
+			from release_schedule
+			where rel_schedule_cd = #{rel_schedule_cd}
+		</select>
+    
+   		<select id="getProduct_cd_name2" resultType="java.lang.String">
+			select product_cd_name
+			from release_schedule
+			where rel_schedule_cd = #{rel_schedule_cd}
+		</select>
+   
+    
+</mapper>
+
+
+

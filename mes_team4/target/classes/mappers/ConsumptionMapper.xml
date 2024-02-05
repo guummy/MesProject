@@ -1,0 +1,180 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<!-- 파일이름 대신 namespace 이름을 불러서 사용 -->
+
+<mapper namespace="com.itwillbs.mappers.ConsumptionMapper">
+	
+	<!-- ?대신 #{변수값}-->
+	
+	<resultMap type="map" id="prListMap">
+		<!-- column="DB의 열이름" property="해당 DB열에 대해 저장할 변수이름"-->
+		<result column="product_cd_name" property="prCdName"/>
+		<result column="product_name" property="prName"/>
+		<result column="product_type_name" property="prTypeName"/>
+		<result column="product_type_cd" property="prTypeCd"/>
+	</resultMap>
+	
+	<select id="getCpList" resultMap="prListMap">
+		select p.product_cd_name, p.product_name, pt.product_type_name, pt.product_type_cd
+		from product p join product_type pt
+		on p.product_type_cd = pt.product_type_cd 
+		where product_dv = '완제품'
+		order by pt.product_type_cd, p.product_cd_name
+		<!-- <if test="search != null">
+			where subject like CONCAT('%',#{search},'%')
+		</if> -->
+		limit #{startRow},#{pageSize}
+	</select>
+	
+	<select id="getCpCount" resultType="java.lang.Integer">
+		select count(*)
+		from product p join product_type pt
+		on p.product_type_cd = pt.product_type_cd
+		where product_dv = '완제품'
+		<!-- <if test="search != null">
+			where subject like CONCAT('%',#{search},'%')
+		</if> -->
+	</select>
+	
+	<select id="getRpList" resultMap="prListMap">
+		select p.product_cd_name, p.product_name, pt.product_type_name, pt.product_type_cd
+		from product p join product_type pt
+		on p.product_type_cd = pt.product_type_cd 
+		where product_dv = '원자재'
+		order by pt.product_type_cd, p.product_cd_name
+		<!-- <if test="search != null">
+			where subject like CONCAT('%',#{search},'%')
+		</if> -->
+		limit #{startRow},#{pageSize}
+	</select>
+	
+	<select id="getRpCount" resultType="java.lang.Integer">
+		select count(*)
+		from product p join product_type pt
+		on p.product_type_cd = pt.product_type_cd
+		where product_dv = '원자재'
+		<!-- <if test="search != null">
+			where subject like CONCAT('%',#{search},'%')
+		</if> -->
+	</select>
+	
+	<insert id="insertConsmpt" parameterType="java.util.Map">
+	  insert into consumption_management (cproduct_cd_name, cproduct_name, rproduct_cd_name, rproduct_name, consumption, consumption_unit, insert_date)
+	  values
+	  <foreach item="consmpt" index="index" collection="consmptArray" separator=",">
+		  (#{consmpt.cproduct_cd_name},
+		   #{consmpt.cproduct_name},
+		   #{consmpt.rproduct_cd_name},
+		   #{consmpt.rproduct_name},
+		   #{consmpt.consumption},
+		   #{consmpt.consumption_unit},
+		   now())
+	  </foreach>
+	</insert>
+	
+	<insert id="updateConsmpt" parameterType="java.util.Map">
+	  insert into consumption_management (cproduct_cd_name, cproduct_name, rproduct_cd_name, rproduct_name, consumption, consumption_unit, insert_date, update_date)
+	  values
+	  <foreach item="consmpt" index="index" collection="consmptArray" separator=",">
+		  (#{consmpt.cproduct_cd_name},
+		   #{consmpt.cproduct_name},
+		   #{consmpt.rproduct_cd_name},
+		   #{consmpt.rproduct_name},
+		   #{consmpt.consumption},
+		   #{consmpt.consumption_unit},
+		   #{consmpt.insert_date},
+		   now())
+	  </foreach>
+	</insert>
+	
+	<update id="updateConsmptName" parameterType="java.util.Map">
+	  update consumption_management 
+	  set ${column_name} = #{product_name}
+	  where ${column_cd} = #{product_cd_name}
+	</update>
+	
+	<select id="checkCprCdName" resultType="com.itwillbs.domain.ConsumptionDTO">
+		select *
+		from consumption_management
+		where cproduct_cd_name = #{cproduct_cd_name}
+	</select>
+	
+	<select id="getCprConsmptList" resultType="com.itwillbs.domain.ConsumptionDTO">
+		select *  
+		from consumption_management
+		<where>
+            <choose>
+            	<when test='search != null and product_dv.equals("all")'>
+                    and (lower(cproduct_cd_name) like CONCAT('%',lower(#{search}),'%') or lower(cproduct_name) like CONCAT('%',lower(#{search}),'%') or lower(rproduct_cd_name) like CONCAT('%',lower(#{search}),'%') or lower(rproduct_name) like CONCAT('%',lower(#{search}),'%'))
+                </when>
+                <when test='search != null and product_dv.equals("cp")'>
+                    and (lower(cproduct_cd_name) like CONCAT('%',lower(#{search}),'%') or lower(cproduct_name) like CONCAT('%',lower(#{search}),'%'))
+                </when>
+                <when test='search != null and product_dv.equals("rp")'>
+                    and (lower(rproduct_cd_name) like CONCAT('%',lower(#{search}),'%') or lower(rproduct_name) like CONCAT('%',lower(#{search}),'%'))
+                </when>
+            </choose>
+        </where>
+		group by cproduct_cd_name
+		order by cproduct_cd_name
+		limit #{startRow},#{pageSize}
+	</select>
+	
+	<select id="getCprConsmptCount" resultType="java.lang.Integer">
+		select count(*)  
+		from (
+    	select *
+   		from consumption_management
+   		<where>
+            <choose>
+            	<when test='search != null and product_dv.equals("all")'>
+                    and (cproduct_cd_name like CONCAT('%',#{search},'%') or cproduct_name like CONCAT('%',#{search},'%') or rproduct_cd_name like CONCAT('%',#{search},'%') or rproduct_name like CONCAT('%',#{search},'%'))
+                </when>
+                <when test='search != null and product_dv.equals("cp")'>
+                    and (cproduct_cd_name like CONCAT('%',#{search},'%') or cproduct_name like CONCAT('%',#{search},'%'))
+                </when>
+                <when test='search != null and product_dv.equals("rp")'>
+                    and (rproduct_cd_name like CONCAT('%',#{search},'%') or rproduct_name like CONCAT('%',#{search},'%'))
+                </when>
+            </choose>
+        </where>
+    	group by cproduct_cd_name
+		) as sub
+	</select>
+	
+	<select id="getRprConsmptList" parameterType="java.util.Map" resultType="com.itwillbs.domain.ConsumptionDTO">
+		select *  
+		from consumption_management
+		where cproduct_cd_name in 
+        <foreach item="name" collection="cprCdNameList" index="index" open="(" separator="," close=")">
+        	#{name}
+        </foreach>
+        order by cproduct_cd_name 
+	</select>
+	
+	<resultMap id="ListInteger" type="java.lang.Integer" />
+	
+	<select id="getRowcolsTd" parameterType="java.util.Map" resultType="java.lang.Integer">
+		SELECT count(*)
+		from (
+		select *  
+		from consumption_management
+		where cproduct_cd_name in 
+        <foreach item="name" collection="cprCdNameList" index="index" open="(" separator="," close=")">
+        	#{name}
+        </foreach>
+		) as sub
+		group by cproduct_cd_name
+	</select>
+	
+	<delete id="deleteConsmpt" parameterType="java.util.Map">
+	  delete from consumption_management
+	  where cproduct_cd_name in 
+      <foreach item="name" collection="checkedValue" index="index" open="(" separator="," close=")">
+      	#{name}
+      </foreach>
+	</delete>
+	
+</mapper>

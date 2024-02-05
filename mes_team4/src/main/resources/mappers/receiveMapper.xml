@@ -1,0 +1,153 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<!-- 파일이름 대신 namespace 이름을 불러서 사용 -->
+
+<mapper namespace="com.itwillbs.mappers.receiveMapper">
+	
+	<!-- ?대신 productDTO의 멤버변수명 사용 #{id}-->
+	<insert id="insertReceive">
+		insert into receive_schedule
+		values(#{rec_schedule_cd},#{wh_cd},#{pchor_cd},#{product_cd_name},#{rec_count},#{rec_date})
+	</insert>
+	
+	<update id="updateStockcount">
+		update stock
+		set stock_count=#{stock_count}
+		where product_cd_name=#{product_cd_name}
+	</update>
+	
+	<select id="getStock_count" resultType="java.lang.Integer">
+        select stock_count
+        from stock
+        where product_cd_name=(#{product_cd_name}) 	
+    </select>
+	
+	<select id="getReceiveList" resultType="com.itwillbs.domain.ReceiveDTO">
+        select * from receive_schedule
+        <if test="search != null">
+        <if test="select != null">
+			<if test="select == 'rec_schedule_cd'.toString()">
+				where rec_schedule_cd like CONCAT('%',#{search},'%')
+			</if>
+			<if test="select == 'pchor_cd'.toString()">
+				where pchor_cd like CONCAT('%',#{search},'%')
+			</if>
+			<if test="select == 'product_cd_name'.toString()">
+				where product_cd_name like CONCAT('%',#{search},'%')
+			</if>
+        </if>
+        </if>
+                order by rec_schedule_cd  
+        limit #{startRow}, #{pageSize}  
+  	
+    </select>
+	
+	<select id="getReceiveCount" resultType="java.lang.Integer">
+        select count(*) from receive_schedule 
+    </select>
+    
+    <select id="getPch_cd" resultType="com.itwillbs.domain.ReceiveDTO">
+        select * from receive_schedule
+        where rec_schedule_cd = #{pch}
+    </select>
+    
+    <!-- 	입고코드번호 -->
+	<select id="getRECNum" resultType="java.lang.Integer">
+	select max(SUBSTR(rec_schedule_cd, 11)) from receive_schedule  
+	where SUBSTR(rec_schedule_cd,4,6) = #{today}	
+	</select>
+	
+	<update id="updateReceive">
+	 	update receive_schedule 
+	 	set wh_cd = #{wh_cd}, pchor_cd = #{pchor_cd}, product_cd_name = #{product_cd_name}, rec_date = #{rec_date}
+	 	where pchor_cd = #{pchor_cd}                     
+    </update>
+    
+    <select id="getReceive" resultType="com.itwillbs.domain.ReceiveDTO">
+        select * from receive_schedule
+        where rec_schedule_cd = #{rec_schedule_cd}
+    </select>
+    
+    <select id="getPerform_date" resultType="com.itwillbs.domain.PerformDTO">
+        select perform_date from performance
+        where instruction_code = #{inst}
+    </select>
+    
+    <select id="getPurchase_date" resultType="com.itwillbs.domain.PurchaseDTO">
+        select purchase_date from purchase_management
+        where purchase_cd = #{pchor_cd}
+    </select>
+    
+    <delete id="deleteReceive">
+    	delete from receive_schedule
+    	where rec_schedule_cd = #{rec_schedule_cd}
+    </delete>
+    
+    <select id="getInst" resultType="java.lang.String">
+			select instruction_code
+			from instruction
+			where order_cd = #{pchor_cd}
+			order by instruction_code asc
+            limit 1
+	</select>
+    
+<!-- 		재고 현황 관련 -->
+		
+		<select id="getbfRec_count" resultType="com.itwillbs.domain.ReceiveDTO">
+			select rec_count
+			from receive_schedule
+			where product_cd_name = #{product_cd_name} and rec_schedule_cd = #{rec_schedule_cd}
+		</select>
+		
+		<select id="getProduct_cd_name2" resultType="java.lang.String">
+			select product_cd_name
+			from receive_schedule
+			where rec_schedule_cd = #{rec_schedule_cd}
+		</select>
+		
+		<select id="getPchor_cd" resultType="java.lang.String">
+			select pchor_cd
+			from receive_schedule
+			where rec_schedule_cd = #{rec_schedule_cd}
+		</select>
+		
+		<select id="getSumRelCount" resultType="java.lang.Integer">
+			select sum(rel_count)
+			from release_schedule
+			where pchor_cd = #{pchor_cd}
+		</select>
+		
+		<select id="getRel_count" resultType="java.lang.Integer">
+			select count(*)
+			from(select *
+			from release_schedule
+			where pchor_cd = #{pchor_cd}) a
+		</select>
+		
+	<select id="getpurcheck" resultType="java.lang.Integer">
+    	select count(*)
+    	from(select *
+    	from receive_schedule
+    	where pchor_cd = #{purchase_cd}) a
+    </select>
+    
+   <select id="getperformcheck" resultType="java.lang.Integer">
+    	select count(*)
+    	from(select *
+    	from receive_schedule
+    	where pchor_cd = #{order_cd}) a
+    </select>
+    
+    <select id="dvcheck" resultType="java.lang.String">
+		select product_dv
+        from product
+        where product_cd_name = #{product_cd_name}
+	</select>
+    
+    
+</mapper>
+
+
+

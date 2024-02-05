@@ -1,0 +1,455 @@
+@charset "UTF-8";
+
+	#topcontainer {
+		width : 100%;
+		margin : 0px auto;
+		margin-top : 20px;
+		font-family: 'Gowun Dodum', sans-serif;
+		font-size: medium;
+	}
+	
+	#container {
+		width : 100%;
+		margin: 0px auto;
+		font-family: 'Gowun Dodum', sans-serif;
+		font-weight: bold;
+	}
+	
+	#botcontainer {
+		width : 100%;
+		margin : 0px auto;
+		clear: both;
+	}
+	
+	#header {
+		margin : 20px auto;
+		padding : 20px;
+		width: 100%; height: 150px;
+		background-color:#6F6F6;
+	}
+	
+	#sidebar1 {
+		width: 250px; height: 600px;
+		float : left;	
+		
+	}
+
+	#contents {
+		margin : 20px 20px;
+		width : calc(100% - 290px); 
+		height: 600px;
+		background-color: white;
+		float : left;
+		border-style : solid 0.5px;
+		border-color: #E4E4E4;
+		font-family: 'Gowun Dodum', sans-serif;
+		
+	}
+	
+	.inserttitle {
+		font: 'Gowun Dodum', sans-serif;
+	}
+	
+	#footer {
+		margin : auto;
+		padding : 20px;
+		width: 100%; height : 100px;
+		background-color:#F6F6F6;
+		clear: both;
+		font-family: 'Gowun Dodum', sans-serif;
+		font-weight: bold;
+	}
+	
+	
+	.main {
+		margin : auto;
+/* 		text-align: center; */
+		align-content: center;
+		color : #787878;	
+		float : inherit;
+	}
+	
+	.footertext {
+		margin : 40px auto;
+		text-align: center;
+		color : #787878;	
+	}
+	
+ 	*{
+ 	padding:0;margin:0
+ 	} 
+ 	
+	li{list-style:none}
+	
+	a{font-size:16px;
+	}
+	
+	.menu {
+	  width: 250px;
+	  overflow: hidden;
+	  margin: 20px auto;
+	}
+	
+	.menu > li {
+	width: 100%;
+ 	text-align: center;
+ 	line-height: 40px;
+	background-color: #F6F6F6; 
+	border-radius: 7px;
+	}
+	
+	.menu a {
+	  color: #545454;
+	  text-decoration: none;
+	}
+	
+	.submenu > li {
+	  line-height: 50px;
+	  background-color:#D2D2D2;
+	}
+	
+	.submenu {
+	  height: 0; /*ul의 높이를 안보이게 처리*/
+	  overflow: hidden;
+	}
+	
+	.menu > li:hover {
+	  background-color:#C0C0C0;
+	  transition-duration: 0.5s;
+	}
+	
+	
+	.menu > .list2:hover .submenu {
+ 	  height: 100px; /*서브메뉴 li한개의 높이 50*5*/
+	  transition-duration: 0.5s;
+	  }
+	  
+	  .menu > .list3:hover .submenu {
+ 	  height: 150px; /*서브메뉴 li한개의 높이 50*5*/
+	  transition-duration: 0.5s;
+	  }
+	  
+	   .menu > .list4:hover .submenu {
+ 	  height: 50px; /*서브메뉴 li한개의 높이 50*5*/
+	  transition-duration: 0.5s;
+	  }
+	  
+	   .menu > .list5:hover .submenu {
+ 	  height: 250px; /*서브메뉴 li한개의 높이 50*5*/
+	  transition-duration: 0.5s;
+	  }
+	  
+	  .wrap {
+ 	  display: inline-block; 
+	  float : right;	
+	}
+
+	.button {
+	  width: 120px;
+	  height: 45px;
+	 	font-family: 'Gowun Dodum', sans-serif;
+	 	font-weight: bolder;
+	  font-size: 15px;
+	  text-transform: uppercase;
+	  letter-spacing: 2.5px;
+	  font-weight: 500;
+	  color: #000;
+	  background-color: #fff;
+	  border: none;
+	  border-radius: 20px;
+	  box-shadow: 0px 2px 2px rgba(0, 0, 0, 0.1);
+ 	  transition: all 0.3s ease 0s; 
+	  cursor: pointer;
+	  outline: none;
+	  }
+	
+	.button:hover {
+	  background-color: #E4E4E4;
+/* 	  box-shadow: 0px 15px 20px rgba(46, 229, 157, 0.4); */
+	  color: #fff;
+	  transform: translateY(-7px);
+	}
+	
+	button + button {
+	margin-left: 10px;
+	}
+	
+	.wrap2 {
+		display: inline-block; 
+		float : right;	
+	}
+	
+	.wrap3 {
+		display: flex;
+		justify-content: flex-end;
+		text-align: center;
+		margin-bottom: 10px;
+	}
+
+	.button2 {
+	  min-width: 100px;
+	  height: 40px;
+	  padding: 0 10px;
+ 	  font-family: 'Gowun Dodum', sans-serif;
+ 	  font-weight: bolder; 
+	  font-size: 18px;
+	  text-transform: uppercase;
+	  letter-spacing: 2.5px;
+	  font-weight: 500;
+	  color: #000;
+	  background-color: #F6F6F6;
+	  border: none;
+	  border-radius: 8px;
+	  box-shadow: 0px 1px 1px rgba(0, 0, 0, 0.1);
+ 	  transition: all 0.3s ease 0s; 
+	  cursor: pointer;
+	  outline: none;
+	  }
+	
+	.button2:hover {
+	  background-color: #E4E4E4;
+	}
+	
+	.button3 {
+	  width: 300px;
+	  height: 150px;
+ 	  font-family: 'Gowun Dodum', sans-serif;
+ 	  font-weight: bolder; 
+	  font-size: 22px;
+	  text-transform: uppercase;
+	  letter-spacing: 2.5px;
+	  font-weight: 590;
+	  color: #000;
+	  background-color: #F6F6F6;
+	  border: none;
+	  border-radius: 8px;
+	  box-shadow: 0px 1px 1px rgba(0, 0, 0, 0.1);
+ 	  transition: all 0.3s ease 0s; 
+	  cursor: pointer;
+	  outline: none;
+	  }
+	
+	.button3:hover {
+	  background-color: #E4E4E4;
+	  color: #fff;
+	}
+	
+	#homebutton {
+	text-align: center;
+	margin : 100px;
+	}
+	
+	#table_search .input_box{
+	height: 30px; width: 300px;
+	border-radius:10px;
+	border: 1px solid #333
+	
+	}
+	
+	body {
+	  color: #666;
+	  font: 14px/24px 'Gowun Dodum', sans-serif;
+	}
+		
+	table {
+	  border-collapse: collapse;
+	  border: 1px solid #c6c9cc;
+	  width : 100%; 
+	  cellspacing : 0;
+	}
+	
+	th, td {
+	  padding: 6px 15px;
+	  text-align: center;
+	  border: 1px solid #c6c9cc;
+	}
+	
+	th {  
+	  background: #42444e;
+	  color: #fff;
+	  text-align: center;
+	}
+	
+/* 	페이징 추가	 */
+	
+	#pagingControl {
+		text-align: center; 
+		margin: 20px 0 0 0;
+		margin-right: auto;
+		margin-left: auto;
+	}
+
+	#pagingControl a {
+		padding: 2px 5px; 
+		text-decoration: none;
+		color: #333; 
+		margin: 0 5px;}
+
+	#pagingControl a:hover {
+		font-weight: bold; 
+		color: #F90;
+		text-decoration: underline;
+	}
+	
+	table tbody tr:hover {
+       	background-color: lightgray;
+        cursor:pointer;
+     }
+    
+    input[name="search"] {
+		padding: 5px;
+	}
+     
+    input[type="text"]:not([name="search"]) {
+		padding: 5px;
+		text-align: center;
+	}
+	
+	input[type="date"] {
+		padding: 5px;
+		text-align: center;
+	}
+	
+	select {
+		padding: 5px;
+		text-align: center;
+	}
+	
+	input[type=checkbox] {
+		cursor: pointer;
+	}
+	
+/* 소요량, 발주 전용 CSS	 */
+	
+	#bsListBtn, #cpListBtn, #emListBtn, #rpListBtn {
+	  -webkit-appearance: none;
+	  -moz-appearance: none;
+	  appearance: none;
+	  
+	  background: var(--button-bg-color);
+	  color: var(--button-color);
+	  
+	  margin: 0;
+	  padding: 5px;
+	  
+	  font-size: 15px;
+	  font-weight: bolder;
+	  text-align: center;
+	  text-decoration: none;
+	  
+	  border: none;
+	  border-radius: 4px;
+	  
+	  display: inline-block;
+	  width: auto;
+	  
+	  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+	  
+	  cursor: pointer;
+	  
+	  transition: 0.5s;
+	  
+	  --button-bg-color: #D9E5FF;
+	}
+	
+	#bsListBtn:hover, #cpListBtn:hover, #emListBtn:hover, #rpListBtn:hover  {
+	  --button-bg-color: #6799FF;
+	}
+	
+	#deleteRowBtn {
+	  -webkit-appearance: none;
+	  -moz-appearance: none;
+	  appearance: none;
+	  
+	  background: var(--button-bg-color);
+	  color: var(--button-color);
+	  
+	  margin: 0;
+	  padding: 5px 8px;
+	  
+	  font-size: 15px;
+	  font-weight: bolder;
+	  text-align: center;
+	  text-decoration: none;
+	  
+	  border: 1px solid gray;
+	  border-radius: 4px;
+	  
+	  display: inline-block;
+	  width: auto;
+	  
+	  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+	  
+	  cursor: pointer;
+	  
+	  transition: 0.5s;
+	  
+	}
+	
+	#addRowBtn {
+		width : 100%;
+		padding: 10px;
+		border: 1px solid #c6c9cc;
+		border-top: 0;
+		cursor: pointer;  
+		transition: 0.5s;
+		display: flex;
+    	justify-content: center;
+    	align-items: flex-start;
+    	gap: 4px;
+	}
+	
+	#addRowBtn:hover {
+		background-color: #CFCFCF;
+	}
+	
+	#List_wrap {
+		margin : 20px 20px;
+		width : 940px;
+		background-color: white;
+		border-style : solid 0.5px;
+		border-color: #E4E4E4;
+		font-family: 'Gowun Dodum', sans-serif;
+		
+	}
+	
+	#selectList_wrap {
+		margin : 20px 20px;
+		width : 500px;
+		background-color: white;
+		border-style : solid 0.5px;
+		border-color: #E4E4E4;
+		font-family: 'Gowun Dodum', sans-serif;
+		
+	}
+	
+	.Btn_wrap {	
+		display: flex;
+		justify-content: flex-end;
+		text-align: center;
+		margin-bottom: 10px;
+	}
+	
+	.tbtr tbody:hover tr {
+  		background-color: lightgray;
+     	cursor:pointer;
+	}
+	
+	.innerWrap2 {
+		display: flex;
+		justify-content: flex-start;
+		gap: 10px;
+	}
+	
+	.inWrap1 {
+		display: flex;
+		flex-direction: column;	
+		gap: 10px;
+	}
+	
+	.inWrap2 {
+		display: flex;
+		flex-direction: column;	
+		gap: 2px;
+	}
+/* 소요량, 발주 전용 CSS	 */
