@@ -108,17 +108,13 @@ public class ReleaseController {
 		System.out.println("ReleaseController relinsertPro()");
 		
 
-		// 출고 수량에 따라 재고현황에 적용할 재소수량 stockDTO에 저장
-		String product_cd_name =  releaseDTO.getProduct_cd_name();
-		int Stock_count=receiveService.getStock_count(product_cd_name);
-		stockDTO.setStock_count(Stock_count-releaseDTO.getRel_count());
-		stockDTO.setProduct_cd_name(product_cd_name);
-		// 재고현황에 재고수량 적용 메서드 호출
-		receiveService.updateStockcount(stockDTO);
-		
-		// 출고수량 등록 -> 등록한 만큼 입고수량 줄어듬 ,,, 
-//		receiveDTO.setRec_count(receiveDTO.getRec_count()-releaseDTO.getRel_count());
-//		System.out.println("rec:"+receiveDTO.getRec_count()+", rel:"+releaseDTO.getRel_count());
+//		// 출고 수량에 따라 재고현황에 적용할 재소수량 stockDTO에 저장
+//		String product_cd_name =  releaseDTO.getProduct_cd_name();
+//		int Stock_count=receiveService.getStock_count(product_cd_name);
+//		stockDTO.setStock_count(Stock_count-releaseDTO.getRel_count());
+//		stockDTO.setProduct_cd_name(product_cd_name);
+//		// 재고현황에 재고수량 적용 메서드 호출
+//		receiveService.updateStockcount(stockDTO);
 		
 		// 출고등록 메서드 호출
 		relService.insertrel(releaseDTO);
@@ -135,7 +131,6 @@ public class ReleaseController {
 		releaseDTO.setRel_schedule_cd(rel_schedule_cd);
 		releaseDTO.setProduct_cd_name(product_cd_name);
 		
-		
 		Map<String, Object> rec=relService.getrec(releaseDTO);
 		
 		
@@ -148,18 +143,25 @@ public class ReleaseController {
 	public String relupdatePro(ReleaseDTO releaseDTO, StockDTO stockDTO) {
 		System.out.println("ReleaseController relupdatePro()");
 		
-		
-		// 출고수량 수정에 따라 재고현황에 적용할 재소수량 stockDTO에 저장
+		// 출고 수량에 따라 재고현황에 적용할 재소수량 stockDTO에 저장
 		String product_cd_name =  releaseDTO.getProduct_cd_name();
 		int Stock_count=receiveService.getStock_count(product_cd_name);
-		
-		releaseDTO.setRel_schedule_cd(releaseDTO.getRel_schedule_cd());
-		releaseDTO.setProduct_cd_name(product_cd_name);			
-		int bfrel=relService.getbfRel_count(releaseDTO);
-		stockDTO.setStock_count((Stock_count+bfrel)-releaseDTO.getRel_count());
+		stockDTO.setStock_count(Stock_count-releaseDTO.getRel_count());
 		stockDTO.setProduct_cd_name(product_cd_name);
 		// 재고현황에 재고수량 적용 메서드 호출
 		receiveService.updateStockcount(stockDTO);
+		
+//		// 출고수량 수정에 따라 재고현황에 적용할 재소수량 stockDTO에 저장
+//		String product_cd_name =  releaseDTO.getProduct_cd_name();
+//		int Stock_count=receiveService.getStock_count(product_cd_name);
+//		
+//		releaseDTO.setRel_schedule_cd(releaseDTO.getRel_schedule_cd());
+//		releaseDTO.setProduct_cd_name(product_cd_name);			
+//		int bfrel=relService.getbfRel_count(releaseDTO);
+//		stockDTO.setStock_count((Stock_count+bfrel)-releaseDTO.getRel_count());
+//		stockDTO.setProduct_cd_name(product_cd_name);
+//		// 재고현황에 재고수량 적용 메서드 호출
+//		receiveService.updateStockcount(stockDTO);
 		
 		relService.updaterel(releaseDTO);
 		
